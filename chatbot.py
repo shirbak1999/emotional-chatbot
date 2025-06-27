@@ -6,7 +6,7 @@ from typing import Optional
 import os
 
 # ────────────────  הגדרות בסיס  ─────────────────────────────────────────────
-client = OpenAI(api_key=os.environ.get("api_key"))
+client = OpenAI(api_key=os.environ.get(OPENAI_API_KEY))
 app = Flask(__name__)
 CORS(app)
 
