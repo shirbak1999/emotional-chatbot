@@ -9,4 +9,4 @@ services:
       pythonVersion: 3.10.12
     envVars:
       - key: OPENAI_API_KEY
-        value: sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        sync: false
