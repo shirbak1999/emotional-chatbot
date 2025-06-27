@@ -4,6 +4,7 @@ from openai      import OpenAI
 import pandas as pd, random, re
 from typing import Optional
 import os
+from flask import send_from_directory
 
 # ────────────────  הגדרות בסיס  ─────────────────────────────────────────────
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
@@ -143,6 +144,9 @@ system_prompt = (
 )
 
 # ────────────────  נקודת קצה  ───────────────────────────────────────────────
+@app.route('/')
+def index():
+    return send_from_directory('.', 'chat.html')
 @app.post("/chat")
 def chat():
     global messages_since_link
