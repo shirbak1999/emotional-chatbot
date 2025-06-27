@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>צ'אט רגשי</title>
+<link href="https://fonts.googleapis.com/css2?family=Varela+Round&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#a8dadc; --green:#f1faee; --accent:#457b9d; --bg:#e0eafc;
+  }
+  *{box-sizing:border-box;font-family:'Varela Round',sans-serif}
+  body{margin:0;height:100vh;display:flex;justify-content:center;align-items:flex-start;
+       background:linear-gradient(135deg,var(--bg),#cfdef3)}
+  .chat-box{width:680px;max-width:95vw;height:92vh;background:#fff;border-radius:28px;
+            box-shadow:0 15px 40px rgba(0,0,0,.14);padding:24px 24px 16px;display:flex;
+            flex-direction:column}
+  .title{font-size:28px;font-weight:700;text-align:center;margin-bottom:6px}
+  .disclaimer{background:#fffbe6;border:2px solid #ffdf91;border-radius:14px;padding:12px 18px;
+              font-size:14px;margin-bottom:12px;line-height:1.4}
+  #chat{flex:1;overflow-y:auto;padding-inline:4px}
+  .msg{padding:12px 16px;border-radius:22px;max-width:75%;margin:10px 0;font-size:15px;
+       animation:fade .25s ease;direction:rtl;line-height:1.55}
+  .user  {
+  background: var(--blue);
+  color: #1d3557;
+  margin-right: auto;
+  border-top-left-radius: 6px;
+  max-width: 35%;
+}  .bot   {background:var(--green);color:#1d3557;margin-left:auto;border-top-right-radius:6px; max-width: 60%}
+  @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1}}
+  .menu{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:6px}
+  .menu button{background:#d0e7ff;color:#1d3557;border:1px solid #a8dadc;padding:10px 14px;
+               border-radius:16px;cursor:pointer;font-size:14px} 
+  .menu button:hover{background:#bcd8ff}
+  .input-wrap{display:flex;gap:10px;margin-top:8px}
+  input{flex:1;padding:12px 16px;border-radius:24px;border:1px solid #a8dadc;font-size:16px;
+        direction:rtl}
+  input:focus{border-color:var(--accent);outline:none}
+  button.send{background:var(--accent);color:#fff;border:none;border-radius:24px;
+              padding:12px 22px;font-size:16px;cursor:pointer}
+  button.send:hover{background:#1d3557}
+</style>
+</head>
+<body>
+  <div class="chat-box">
+    <div class="title">💬 צ'אט רגשי</div>
+    <div class="disclaimer">
+      שים/י לב: הצ'אט נותן מענה רגשי ראשוני בלבד ואינו מחליף עזרה מקצועית.  
+      כאן אפשר לדבר על רגשות 🧖 ולקבל אוזן קשבת וחיבוק וירטואלי.
+    </div>
+    <div id="chat"></div>
+    <div class="input-wrap">
+      <input id="userInput" placeholder="מה שלומך עכשיו?">
+      <button class="send" onclick="sendMsg()">שלח</button>
+    </div>
+  </div>
+
+<script>
+const chat = document.getElementById("chat"),
+      input = document.getElementById("userInput");
+let skipMenu = false;
+
+function addMsg(txt, cls = "bot") {
+  const div = document.createElement("div");
+  div.className = `msg ${cls}`;
+  div.innerHTML = txt;
+  chat.append(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function renderMenu(){
+  const wrap = document.createElement("div");
+  wrap.className = "menu";
+  [
+    {txt:"🧘‍♀️ מדיטציה"},
+    {txt:"🌬️ נשימות"},
+    {txt:"☀️ הפגת מתחים"},
+    {txt:"💬 שיחת נפש"}
+  ].forEach(o => {
+    const b = document.createElement("button");
+    b.textContent = o.txt;
+    b.onclick = () => {
+      input.value = o.txt;
+      sendMsg();
+      wrap.remove();
+    };
+    wrap.append(b);
+  });
+  chat.append(wrap);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function startChat() {
+  addMsg("היי! אני כאן בשבילך 🫶 בחר איך תרצה להתחיל את השיחה שלנו:", "bot");
+  renderMenu();
+}
+
+window.onload = startChat;
+input.addEventListener("keydown", e => e.key === "Enter" && sendMsg());
+
+async function sendMsg() {
+  const text = input.value.trim();
+  if (!text) return;
+  addMsg(text, "user");
+  input.value = "";
+
+  const typing = document.createElement("div");
+  typing.className = "msg bot";
+  const typingVariants = [
+  "חושב על תשובה עמוקה...",
+  "בודק איך לעזור...",
+  "שולף לך משהו מרגיע...",
+  "כותב לך מענה מכל הלב..."
+];
+  typing.textContent = typingVariants[Math.floor(Math.random() * typingVariants.length)];
+  chat.append(typing);
+
+  try {
+    const res = await fetch("http://localhost:5000/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message: text })
+    });
+    const data = await res.json();
+    typing.remove();
+    addMsg(data.response, "bot");
+
+    if (text.match(/^[1-4]$/) && !skipMenu) {
+      setTimeout(renderMenu, 600);
+    }
+    skipMenu = false;
+  } catch (err) {
+    typing.remove();
+    addMsg("😓 ארעה שגיאה, ננסה שוב?", "bot");
+  }
+}
+</script>
+</body>
+</html>
