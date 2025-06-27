@@ -6,7 +6,6 @@ from typing import Optional
 import os
 from flask import send_from_directory
 
-# ────────────────  הגדרות בסיס  ─────────────────────────────────────────────
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 app = Flask(__name__)
 CORS(app)
@@ -79,7 +78,6 @@ LINK_REQUEST_PATTERNS = re.compile(
     r"(מיינדפולנס|מדיטציה|משהו מרגיע|שלח לי קישור|יש לך קישור\??)"
 )
 
-# ────────────────  פונקציות עזר  ─────────────────────────────────────────────
 def sample_links(cat: str, k: int = 2):
     subset = links_df[links_df["category"] == cat]
     if subset.empty:
@@ -121,15 +119,13 @@ def wants_link_explicit(txt: str) -> Optional[str]:
     }.items():
         if word in txt:
             return cat
-    # "שלח לי קישור / יש לך קישור?"
     if "קישור" in txt:
         return random.choice(list(CATEGORIES.values()))
     return None
 
-# ────────────────  משתנים גלובליים קלים  ────────────────────────────────────
-messages_since_link = 0   # מונה הודעות משתמש
-msg_count = 0             # מונה כללי
-chat_history = []         # לשיחה חופשית עם GPT
+messages_since_link = 0   
+msg_count = 0             
+chat_history = []       
 
 system_prompt = (
     "את/ה צ'אטבוט תמיכה רגשית בעברית מדוברת, חמה ופשוטה. "
@@ -143,7 +139,6 @@ system_prompt = (
     "המיקוד שלך הוא הקשבה, שיקוף רגשי, חיזוק עדין והצעה עדינה לפעולה מרגיעה – לא פתרונות."
 )
 
-# ────────────────  נקודת קצה  ───────────────────────────────────────────────
 @app.route('/')
 def index():
     return send_from_directory('.', 'chat.html')
@@ -158,13 +153,11 @@ def chat():
     lower = user_msg.lower()
     msg_count += 1
 
-    # 1) מצב חירום
     if any(w in lower for w in DANGER_WORDS):
         return jsonify(response="💔 נשמע שאת/ה במצוקה קשה. "
                                 "אנא פנה/י מיד לעזרה מקצועית – ער\"ן ‎1201 "
                                 "או מוקד חירום ‎101. אני עוצרת כאן את השיחה.")
 
-    # 2) תוכן לא רגשי
     if any(k in lower for k in NON_EMO_KEYWORDS):
         return jsonify(response="📚 אני כאן לתמיכה רגשית בלבד. "
                                 "לשאלות ידע מומלץ מקור מתאים 🙂")
@@ -182,10 +175,8 @@ def chat():
     if user_msg == "שיחת נפש":
         return jsonify(response="בשמחה 😊 מה מעסיק אותך כרגע?")
 
-    # 3) בקשה ישירה לקישור (ע״פ regex)
     match = LINK_REQUEST_PATTERNS.search(user_msg)
     if match:
-        # אם נמצא ביטוי – נחפש ב-CATEGORIES התאמה; ברירת מחדל מדיטציה
         cat = "מדיטציה"
         if "נשימ" in lower:
             cat = "נשימות"
@@ -193,15 +184,12 @@ def chat():
             cat = "הפגת מתחים"
         return jsonify(response=send_soothing_links(cat))
 
-    # 4) לחיצה על כפתור תפריט
     if user_msg in CATEGORIES:
         return jsonify(response=send_soothing_links(CATEGORIES[user_msg]))
 
-    # 5) "שיחת נפש"
     if user_msg == "שיחת נפש":
         return jsonify(response="בשמחה 🙂 ספר/י לי מה עובר עליך כרגע?")
 
-    # 6) שיחה חופשית  (GPT)
     chat_history.append({"role": "user", "content": user_msg})
     if len(chat_history) > 6:
         chat_history.pop(0)
@@ -218,10 +206,9 @@ def chat():
 
     reply = gpt_reply
 
-    # 7) הצעה ספונטנית כל 4 הודעות או אם הטקסט נשמע מתוח
     messages_since_link += 1
     if messages_since_link >= 4 or needs_spontaneous_link(lower):
-        messages_since_link = 0    # איפוס המונה
+        messages_since_link = 0    
         random_cat = random.choice(list(CATEGORIES.values()))
         extra_link = sample_links(random_cat, 1)
         if extra_link:

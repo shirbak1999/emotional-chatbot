@@ -1,16 +1,12 @@
 venv/
 __pycache__/
 
-# קבצים של macOS
 .DS_Store
 
-# מפתחות או קבצי קונפיג רגישים
 .env
 
-# קבצים גדולים לא נחוצים
 *.log
 *.sqlite3
 
-# תיקיות IDE
 .idea/
 .vscode/
