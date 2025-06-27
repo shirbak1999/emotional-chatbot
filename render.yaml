@@ -3,6 +3,9 @@ services:
     name: emotional-chatbot
     env: python
     buildCommand: "pip install -r requirements.txt"
+    build:
+      pythonVersion: "3.12.3"
+    plan: free
     startCommand: "python chatbot.py"
     envVars:
       - key: OPENAI_API_KEY
