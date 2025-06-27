@@ -1,9 +1,8 @@
---upgrade-pip
 --extra-index-url https://download.pytorch.org/whl/cpu
 flask==3.0.2
 flask-cors==4.0.0
 openai==1.31.1
 pandas==2.2.2
 sentence-transformers==0.7.2
-torch==2.2.2+cpu        # wheel מוכן ל-3.10
+torch==2.2.2+cpu       
 urllib3<2.2,>=1.26.5

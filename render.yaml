@@ -1,10 +1,13 @@
 services:
-  - type: web
-    name: emotional-chatbot
-    env: python
-    buildCommand: "pip install -r requirements.txt"
-    plan: free
-    startCommand: gunicorn chatbot:app
-    envVars:
+  - type: web                 
+    name: emotional-chatbot   
+    env: python             
+    region: oregon            
+    plan: free            
+    buildCommand: |
+      pip install --upgrade pip         
+      pip install -r requirements.txt    
+    startCommand: gunicorn chatbot:app  
+    envVars:          
       - key: OPENAI_API_KEY
-        sync: false
+        sync: false    
