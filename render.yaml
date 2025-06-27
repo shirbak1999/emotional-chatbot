@@ -6,7 +6,7 @@ services:
     build:
       pythonVersion: "3.12.3"
     plan: free
-    startCommand: "python chatbot.py"
+    startCommand: gunicorn chatbot:app
     envVars:
       - key: OPENAI_API_KEY
         sync: false
