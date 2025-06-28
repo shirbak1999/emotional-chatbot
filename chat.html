@@ -64,9 +64,16 @@ let skipMenu = false;
 function addMsg(txt, cls = "bot") {
   const div = document.createElement("div");
   div.className = `msg ${cls}`;
-  div.innerHTML = txt;
+  div.innerHTML = cls === "bot" ? linkify(txt) : txt;
   chat.append(div);
   chat.scrollTop = chat.scrollHeight;
+}
+
+function linkify(text) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.replace(urlRegex, url => {
+    return `<a href="${url}" target="_blank" style="color:#1d3557;text-decoration:underline;">${url}</a>`;
+  });
 }
 
 function renderMenu(){
