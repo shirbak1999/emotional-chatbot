@@ -166,6 +166,9 @@ def chat():
     if explicit_cat:
         return jsonify(response=send_soothing_links(explicit_cat))
     
+    if user_msg == "שיחת נפש":
+        return jsonify(response="איזה כיף שבחרת לעשות איתי שיחת נפש. על מה אתה רוצה לדבר? אני מקשיב")
+    
     if user_msg in CATEGORIES:
         cat   = CATEGORIES[user_msg]
         links = send_soothing_links(cat)
